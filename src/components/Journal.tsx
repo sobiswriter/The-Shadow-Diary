@@ -116,7 +116,7 @@ export function Journal() {
                   value={entry}
                   onChange={(e) => setEntry(e.target.value)}
                   placeholder="What's on your mind?"
-                  className="flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg leading-relaxed resize-none p-0 font-body"
+                  className="flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg leading-relaxed resize-none p-0 font-body overflow-hidden"
                   disabled={isLoading}
                 />
               </div>
