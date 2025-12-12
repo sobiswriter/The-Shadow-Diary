@@ -15,6 +15,7 @@ import { generateShadowResponse } from "@/ai/flows/generate-shadow-response";
 import { analyzeEmotionalTags } from "@/ai/flows/analyze-emotional-tags";
 import { saveEntry, hasGeneratedReportThisMonth } from "@/lib/journal";
 import { ShadowResponse } from "./ShadowResponse";
+import { formatDate } from "@/lib/utils";
 
 export function Journal() {
   const [api, setApi] = useState<CarouselApi>();
@@ -26,8 +27,10 @@ export function Journal() {
   
   const lastSubmittedEntry = useRef("");
   const isProcessing = useRef(false);
+  const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
+    setCurrentDate(formatDate(new Date()));
     // Check for monthly report eligibility on mount
     const today = new Date();
     // Use `getDate() === 1` for the first day of the month
@@ -106,14 +109,18 @@ export function Journal() {
       <Carousel setApi={setApi} opts={{ draggable: !isLoading, duration: 40 }} className="w-full notebook">
         <CarouselContent>
           <CarouselItem>
-            <div className="p-6 sm:p-8 aspect-[4/3] page-texture relative">
-              <Textarea
-                value={entry}
-                onChange={(e) => setEntry(e.target.value)}
-                placeholder="What's on your mind?"
-                className="w-full h-full bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg leading-relaxed resize-none p-0 font-body"
-                disabled={isLoading}
-              />
+            <div className="aspect-[4/3] page-texture relative flex">
+              <div className="w-1/2 p-6 sm:p-8 flex flex-col">
+                <div className="text-sm font-headline text-muted-foreground mb-4">{currentDate}</div>
+                <Textarea
+                  value={entry}
+                  onChange={(e) => setEntry(e.target.value)}
+                  placeholder="What's on your mind?"
+                  className="flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg leading-relaxed resize-none p-0 font-body"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="w-1/2" />
                <div className="absolute bottom-6 right-6 text-accent/50 flex items-center gap-2 pointer-events-none">
                   <p className="text-sm font-headline opacity-60">Swipe to turn page</p>
                   <ArrowRight className="h-4 w-4 opacity-60" />
