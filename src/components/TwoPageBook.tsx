@@ -11,6 +11,7 @@ interface TwoPageBookProps {
     onAnimationComplete?: () => void;
     onLeftClick?: () => void;
     onRightClick?: () => void;
+    onBookmarkClick?: () => void;
     bookState?: "closed" | "opening" | "open";
 }
 
@@ -22,6 +23,7 @@ export function TwoPageBook({
     onAnimationComplete,
     onLeftClick,
     onRightClick,
+    onBookmarkClick,
     bookState = "open",
 }: TwoPageBookProps) {
     const [prevLeft, setPrevLeft] = useState<React.ReactNode>(null);
@@ -155,6 +157,28 @@ export function TwoPageBook({
                     )}
                 </div>
 
+                {/* BOOKMARK RIBBON (Quick Close) */}
+                {/* Only visible when book is open */}
+                {bookState === "open" && onBookmarkClick && (
+                    <div
+                        className="absolute -top-4 right-16 z-50 cursor-pointer group transition-transform duration-300 hover:-translate-y-2"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onBookmarkClick();
+                        }}
+                        title="Close Diary"
+                    >
+                        <div className="w-8 h-32 bg-red-950/80 shadow-md backdrop-blur-sm relative flex flex-col items-center justify-end pb-4 transition-colors group-hover:bg-red-900">
+                            {/* Stitching detail */}
+                            <div className="absolute top-0 bottom-0 left-1 w-px border-l border-dashed border-white/20" />
+                            <div className="absolute top-0 bottom-0 right-1 w-px border-r border-dashed border-white/20" />
+
+                            {/* Bottom triangle cut */}
+                            <div className="absolute bottom-0 w-full h-8 bg-[#1a1a1a]" style={{ clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' }} />
+                        </div>
+                    </div>
+                )}
+
                 {/* FLIPPER OVERLAY */}
                 {isAnimating && turningDirection && (
                     <div
@@ -211,6 +235,6 @@ export function TwoPageBook({
                     to { transform: rotateY(0deg); }
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

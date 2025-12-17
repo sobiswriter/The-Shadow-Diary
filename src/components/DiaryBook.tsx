@@ -329,6 +329,12 @@ export function DiaryBook() {
                 onAnimationComplete={onAnimationComplete}
                 onLeftClick={currentLeftPageNum > 0 ? goToPrevSpread : undefined} // Left page click = Prev (unless void)
                 onRightClick={goToNextSpread} // Right page click = Next (Open or Turn)
+                onBookmarkClick={() => {
+                    if (isAnimating) return;
+                    setCurrentLeftPageNum(0);
+                    loadSpread(0);
+                    setTurningDirection("prev");
+                }}
                 bookState={currentLeftPageNum === 0 ? "closed" : "open"}
             />
 
