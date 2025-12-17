@@ -2,13 +2,13 @@
 
 <div align="center">
 
-**A journaling application that acts as a Jungian mirror, revealing your repressed subconscious through AI-powered psychological analysis**
+**A hyper-realistic digital diary application that bridges the gap between physical journaling and digital persistence.**
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.9-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2.1-61DAFB)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-11.9.1-orange)](https://firebase.google.com/)
-[![Genkit](https://img.shields.io/badge/Genkit-AI-purple)](https://firebase.google.com/products/genkit)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC)](https://tailwindcss.com/)
+[![Radix UI](https://img.shields.io/badge/Radix-Primitives-white)](https://www.radix-ui.com/)
 
 </div>
 
@@ -16,74 +16,72 @@
 
 ## 📖 About
 
-**The Shadow Diary** is not your typical journal. Built on Jungian psychology principles, this application utilizes Generative AI to act as your personal psychoanalyst—one that doesn't comfort, but confronts. Write your thoughts on one page, turn it, and discover what your subconscious might be hiding.
+**The Shadow Diary** aims to deliver the most immersive digital writing experience possible. Unlike standard note-taking apps, it recreates the tactile feeling of a physical book—complete with weight, texture, and fluid animation—while offering the advantages of digital storage.
 
-The AI persona, "The Shadow," acts as a detached, hyper-observant clinician that analyzes your entries for contradictions, patterns, and repressed thoughts, offering short, punchy observations that challenge your self-perception.
-
-### 🎯 Core Concept
-
-> **User writes:** "I think the date went well. He talked a lot."  
-> **Shadow responds:** "You equate silence with failure. You let him talk so you wouldn't have to reveal yourself."
+> **Current State:** The project has recently undergone a major UI/UX overhaul to implement "schemeless" interaction and realistic book physics. The original AI psychoanalysis features ("The Shadow") are currently being re-integrated into this new interface.
 
 ---
 
 ## ✨ Features
 
-### 🖋️ **The Journaling Loop**
-- **Front Page:** Write your entry in a skeuomorphic worn black leather notebook with clean serif typography
-- **Page Turn:** Swipe left to "turn the page" (no submit button)
-- **Back Page:** Receive The Shadow's response, typed letter-by-letter in a distressed typewriter font on grittier paper
+### � **Realistic Book Simulation**
+- **Two-Page Spread:** View your diary just like a real book, with a spiral binding and realistic shadows.
+- **Natural Interaction:** 
+  - **Click-to-Turn:** Simply click the outer edges of the pages to turn them. No buttons required.
+  - **Seamless Cover:** The cover is fully integrated; click it to flip the book open smoothly.
+  - **Content Focus:** Click anywhere on the lined paper to focus the writing area without triggering page turns.
 
-### 🧠 **AI Psychoanalyst ("The Shadow")**
-- Powered by Google's Generative AI via Firebase Genkit
-- Acts as a detached observer, identifying contradictions in your entries
-- No empathy, no abuse—just cold, analytical truth
-- Short, punchy observations that cut deep
+### 🤫 **Schemeless UI**
+- **Distraction-Free:** Navigation controls are hidden by default to immersive you in the writing experience.
+- **Hover Reveal:** Access settings, import/export tools, and navigation shortcuts by simply moving your mouse to the top of the screen.
+- **Dynamic Centering:** The book automatically centers itself on screen depending on whether it is open or closed.
 
-### 📁 **The Patient File**
-- Vector database stores emotional tags from every entry (e.g., Avoidance, Narcissism, Guilt)
-- Monthly psychological profile generated on the 1st of each month
-- Presented as a manila folder UI element
-- Tracks patterns and psychological trends over time
+### 💾 **Data Persistence**
+- **Local Storage:** All entries are saved locally to your device immediately as you type.
+- **Import/Export:** Full control over your data with JSON export and import functionality.
+- **Page Management:** Unlimited pages, automatically created as you write.
 
-### 🎨 **Immersive Design**
-- **Typography:** Clean serif for user (the mask), distressed typewriter for Shadow (the truth)
-- **Haptic Feedback:** Heavy, low-frequency thuds during Shadow responses (like a heartbeat)
-- **Animations:** Slow, heavy page-turn transitions for psychological weight
+---
+
+## 🚧 Roadmap & AI Integration
+
+The core concept of "The Shadow"—an AI persona that analyzes your entries using Jungian psychology—is the next phase of integration for the new book UI.
+
+- [x] **Phase 1: Visual Physics** (Completed)
+  - [x] 3D Page Turning (Sheet flipping)
+  - [x] Interactive Click Zones
+  - [x] Schemeless Navigation
+- [ ] **Phase 2: The Shadow Returns** (In Progress)
+  - [ ] Connect Gemini/Genkit AI to the new `DiaryBook` architecture
+  - [ ] Implement "Shadow Responses" as marginalia or inserted letters
+  - [ ] Monthly Psychological Reporting
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-- **[Next.js 15.5.9](https://nextjs.org/)** - React framework with App Router
-- **[React 19.2.1](https://reactjs.org/)** - UI library
-- **[TypeScript 5](https://www.typescriptlang.org/)** - Type safety
-- **[Tailwind CSS](https://tailwindcss.com/)** - Styling
-- **[Radix UI](https://www.radix-ui.com/)** - Accessible component primitives
-- **[Lucide React](https://lucide.dev/)** - Icon library
+### Frontend Core
+- **Next.js 15** (App Router, Turbopack)
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS**
 
-### Backend & AI
-- **[Firebase Genkit](https://firebase.google.com/products/genkit)** - AI orchestration framework
-- **[Google Generative AI](https://ai.google.dev/)** - LLM for Shadow responses
-- **[Firebase](https://firebase.google.com/)** - Authentication & database
+### UI & Animation
+- **Radix UI** (Dialogs, Dropdowns, Toast)
+- **Lucide React** (Icons)
+- **CSS 3D Transforms** (Custom page turn engine)
 
-### Additional Libraries
-- **[React Hook Form](https://react-hook-form.com/)** + **[Zod](https://zod.dev/)** - Form validation
-- **[date-fns](https://date-fns.org/)** - Date manipulation
-- **[Recharts](https://recharts.org/)** - Data visualization for Patient File
-- **[Tone.js](https://tonejs.github.io/)** - Audio/haptic feedback
+### AI & Backend (Pending Re-integration)
+- **Firebase Genkit**
+- **Google Generative AI (Gemini)**
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- **Node.js** (v20 or higher)
-- **npm** or **pnpm**
-- **Firebase account** with Genkit setup
-- **Google AI API key**
+- Node.js (v20+)
+- npm
 
 ### Installation
 
@@ -98,154 +96,16 @@ The AI persona, "The Shadow," acts as a detached, hyper-observant clinician that
    npm install
    ```
 
-3. **Set up environment variables**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   GOOGLE_GENAI_API_KEY=your_api_key_here
-   # Add other Firebase credentials as needed
-   ```
-
-4. **Run the development server**
+3. **Run the development server**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**
-   
-   Navigate to [http://localhost:9002](http://localhost:9002)
-
-### Alternative: Genkit Development Mode
-
-To run with Genkit's developer UI for AI flow debugging:
-
-```bash
-npm run genkit:dev
-# or with hot reload
-npm run genkit:watch
-```
-
----
-
-## 📝 Usage
-
-1. **Write Your Entry**  
-   Open the application and begin typing your journal entry on the front page.
-
-2. **Turn the Page**  
-   Swipe left or click the page corner to submit your entry.
-
-3. **Read The Shadow's Response**  
-   Watch as The Shadow types out its analysis letter-by-letter on the back page.
-
-4. **Review Your Patient File**  
-   Check your monthly psychological profile on the 1st of each month.
-
----
-
-## 📂 Project Structure
-
-```
-The-Shadow-Diary/
-├── src/
-│   ├── ai/                    # Genkit AI flows and configuration
-│   │   ├── flows/            # AI generation flows
-│   │   ├── genkit.ts         # Genkit setup
-│   │   └── dev.ts            # Development entry point
-│   ├── app/                   # Next.js app router pages
-│   │   ├── layout.tsx
-│   │   ├── page.tsx          # Main journal page
-│   │   ├── profile/          # User profile pages
-│   │   └── globals.css
-│   ├── components/            # React components
-│   │   ├── Journal.tsx       # Main journal interface
-│   │   ├── ShadowResponse.tsx # Shadow's response display
-│   │   ├── PatientFile.tsx   # Monthly report component
-│   │   └── ui/               # Reusable UI components
-│   ├── hooks/                 # Custom React hooks
-│   ├── lib/                   # Utilities and helpers
-│   │   ├── journal.ts        # Journal logic
-│   │   └── utils.ts          # General utilities
-├── docs/                      # Documentation
-├── public/                    # Static assets
-├── .env                       # Environment variables (not committed)
-├── next.config.ts            # Next.js configuration
-├── tailwind.config.ts        # Tailwind CSS configuration
-├── tsconfig.json             # TypeScript configuration
-└── package.json              # Project dependencies
-```
-
----
-
-## ⚙️ Configuration
-
-### Firebase Setup
-
-1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable authentication methods
-3. Set up Firestore database
-4. Add your credentials to `.env`
-
-### AI Model Configuration
-
-The Shadow's personality and response style can be configured in `src/ai/flows/`. Adjust:
-- Temperature for response variability
-- System prompts for tone and analysis depth
-- Response length and format
-
----
-
-## 🗺️ Roadmap
-
-- [x] Core journaling interface
-- [x] AI-powered Shadow responses
-- [x] Page turn animations
-- [ ] Vector database integration for emotional tagging
-- [ ] Monthly Patient File generation
-- [ ] Haptic feedback implementation
-- [ ] Mobile app version
-- [ ] Export journal entries
-- [ ] Dark mode toggle
-- [ ] Multi-language support
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+4. **Start Writing**
+   Navigate to `http://localhost:9002` to open your diary.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- Inspired by **Carl Jung's** concept of the Shadow self
-- Built with **Firebase Genkit** for AI orchestration
-- UI components from **shadcn/ui** and **Radix UI**
-- Special thanks to the open-source community
-
----
-
-## 📧 Contact
-
-For questions or feedback, please open an issue or contact the maintainer.
-
----
-
-<div align="center">
-
-**"The shadow is a moral problem that challenges the whole ego-personality."**  
-— Carl Jung
-
-</div>
+This project is licensed under the MIT License.
