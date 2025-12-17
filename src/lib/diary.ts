@@ -7,6 +7,7 @@ export type DiaryPage = {
     createdAt: string;
     modifiedAt: string;
     title?: string;
+    customDate?: string;
 };
 
 const DIARY_KEY = "normal_diary_pages";

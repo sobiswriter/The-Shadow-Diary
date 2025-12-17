@@ -115,6 +115,14 @@ export function DiaryBook() {
         else setRightPageData(updatedPage);
     }, []);
 
+    const handleDateChange = useCallback((pageData: DiaryPageType, newDate: string, isLeft: boolean) => {
+        const updatedPage = { ...pageData, customDate: newDate, modifiedAt: new Date().toISOString() };
+        savePage(updatedPage);
+
+        if (isLeft) setLeftPageData(updatedPage);
+        else setRightPageData(updatedPage);
+    }, []);
+
     const goToNextSpread = useCallback(() => {
         if (isAnimating) return;
 
@@ -143,6 +151,27 @@ export function DiaryBook() {
         setTurningDirection("prev");
 
     }, [currentLeftPageNum, isAnimating]);
+
+    // Keyboard Navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if user is typing in an input or textarea
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                return;
+            }
+
+            if (e.key === "ArrowRight") {
+                goToNextSpread();
+            } else if (e.key === "ArrowLeft") {
+                if (currentLeftPageNum > 0) {
+                    goToPrevSpread();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [goToNextSpread, goToPrevSpread, currentLeftPageNum]);
 
     const onAnimationComplete = useCallback(() => {
         setTurningDirection(null);
@@ -183,6 +212,8 @@ export function DiaryBook() {
                 content={leftPageData.content}
                 onContentChange={(c) => handleContentChange(leftPageData, c, true)}
                 date={new Date(leftPageData.modifiedAt)}
+                customDate={leftPageData.customDate}
+                onDateChange={(d) => handleDateChange(leftPageData, d, true)}
             />
         ) : <div className="p-8">Loading...</div>;
 
@@ -192,6 +223,8 @@ export function DiaryBook() {
                 content={rightPageData.content}
                 onContentChange={(c) => handleContentChange(rightPageData, c, false)}
                 date={new Date(rightPageData.modifiedAt)}
+                customDate={rightPageData.customDate}
+                onDateChange={(d) => handleDateChange(rightPageData, d, false)}
             />
         ) : <div className="p-8">Loading...</div>;
     }

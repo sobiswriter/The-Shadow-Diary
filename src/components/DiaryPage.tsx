@@ -11,6 +11,8 @@ interface DiaryPageProps {
     isEditable?: boolean;
     showDate?: boolean;
     date?: Date;
+    customDate?: string;
+    onDateChange?: (date: string) => void;
 }
 
 export function DiaryPage({
@@ -20,30 +22,52 @@ export function DiaryPage({
     isEditable = true,
     showDate = true,
     date = new Date(),
+    customDate,
+    onDateChange,
 }: DiaryPageProps) {
     const [localContent, setLocalContent] = useState(content);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Update local content when prop changes (e.g., page navigation)
+    // Initial display date: use customDate if exists, else format the date prop
+    const [displayDate, setDisplayDate] = useState(customDate || formatDate(date));
+
     useEffect(() => {
         setLocalContent(content);
     }, [content]);
 
-    // Handle content changes with debounced save
+    useEffect(() => {
+        // When prop customDate updates (e.g. navigation), sync local state
+        // If no customDate from prop, default to formatted date
+        setDisplayDate(customDate || formatDate(date));
+    }, [customDate, date]);
+
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newContent = e.target.value;
         setLocalContent(newContent);
         onContentChange(newContent);
     };
 
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newDate = e.target.value;
+        setDisplayDate(newDate);
+        if (onDateChange) {
+            onDateChange(newDate);
+        }
+    };
+
     return (
         <div className="h-full diary-page-container relative flex flex-col">
-            {/* Page header with date */}
+            {/* Page header with editable date */}
             {showDate && (
                 <div className="diary-page-header px-8 pt-6 pb-4">
-                    <div className="text-sm font-headline text-muted-foreground/70">
-                        {formatDate(date)}
-                    </div>
+                    <input
+                        type="text"
+                        value={displayDate}
+                        onChange={handleDateChange}
+                        disabled={!isEditable}
+                        placeholder={formatDate(new Date())}
+                        className="text-sm font-headline text-muted-foreground/70 bg-transparent border-none focus:outline-none focus:ring-0 w-full placeholder:text-muted-foreground/30"
+                    />
                 </div>
             )}
 
