@@ -12,7 +12,9 @@ import {
     getTotalPages,
     initializeDiary,
     type DiaryPage as DiaryPageType,
+    getAllPages,
 } from "@/lib/diary";
+import { TableOfContents } from "./TableOfContents";
 
 export function DiaryBook() {
     // Current Left Page Number
@@ -71,30 +73,55 @@ export function DiaryBook() {
     // Page Data State
     const [leftPageData, setLeftPageData] = useState<DiaryPageType | null>(null);
     const [rightPageData, setRightPageData] = useState<DiaryPageType | null>(null);
+    const [allPages, setAllPages] = useState<DiaryPageType[]>([]);
 
     useEffect(() => {
         initializeDiary();
         updateTotalPages();
+        // Initial load of content
+        loadSpread(currentLeftPageNum);
     }, []);
 
     const updateTotalPages = () => {
         setTotalPages(getTotalPages());
+        setAllPages(getAllPages());
     };
+
+    // Mapping Logic:
+    // Virtual Book Page 1 (Left) = TOC
+    // Virtual Book Page 2 (Right) = DB Page 1
+    // Virtual Book Page 3 (Left) = DB Page 2
+    // Virtual Book Page 4 (Right) = DB Page 3
+    // General: DB Page N = Virtual Page (N + 1)
 
     // Load a Spread
     const loadSpread = (leftNum: number) => {
+        setAllPages(getAllPages()); // Refresh TOC data on every turn to be safe
+
         if (leftNum === 0) {
             // Spread 0: Closed
             setLeftPageData(null);
-            setRightPageData(null); // Right is cover, handled specially in render
+            setRightPageData(null);
             return;
         }
 
-        const pLeft = getPage(leftNum) || createNewPage(leftNum);
-        const pRight = getPage(leftNum + 1) || createNewPage(leftNum + 1);
+        // Left Page Logic
+        if (leftNum === 1) {
+            // Special Case: Page 1 is TOC (No DB data needed for 'content' prop of TOC, passing allPages)
+            setLeftPageData(null); // Marker for TOC
+        } else {
+            // Virtual Page N (where N > 1 and Odd) -> DB Page (N-1)
+            const dbPageNum = leftNum - 1;
+            setLeftPageData(getPage(dbPageNum) || createNewPage(dbPageNum));
+        }
 
-        setLeftPageData(pLeft);
-        setRightPageData(pRight);
+        // Right Page Logic
+        // Virtual Page N+1 (Even) -> DB Page (N)
+        const dbPageNumRight = leftNum;
+        // Note: leftNum is the Virtual Left Page #.
+        // If leftNum=1 (TOC), Right=2. DB Page = 2-1 = 1.
+
+        setRightPageData(getPage(dbPageNumRight) || createNewPage(dbPageNumRight));
     };
 
     const createNewPage = (pageNum: number): DiaryPageType => {
@@ -113,6 +140,9 @@ export function DiaryBook() {
 
         if (isLeft) setLeftPageData(updatedPage);
         else setRightPageData(updatedPage);
+
+        // Update all pages list for TOC if title/date changes (though content change mainly updates preview)
+        setAllPages(getAllPages());
     }, []);
 
     const handleDateChange = useCallback((pageData: DiaryPageType, newDate: string, isLeft: boolean) => {
@@ -121,6 +151,8 @@ export function DiaryBook() {
 
         if (isLeft) setLeftPageData(updatedPage);
         else setRightPageData(updatedPage);
+
+        setAllPages(getAllPages());
     }, []);
 
     const goToNextSpread = useCallback(() => {
@@ -151,6 +183,30 @@ export function DiaryBook() {
         setTurningDirection("prev");
 
     }, [currentLeftPageNum, isAnimating]);
+
+    const jumpToPage = useCallback((dbPageNum: number) => {
+        if (isAnimating) return;
+
+        // We want to see DB Page #N.
+        // It lives on Virtual Page # (N+1).
+        // If Virtual Page is Even (Right Side), we want the spread starting at (Virtual - 1).
+        // e.g. DB Page 1 -> Virtual 2 (Right). Spread starts at Virtual 1.
+        // e.g. DB Page 2 -> Virtual 3 (Left). Spread starts at Virtual 3.
+
+        const virtualPageNum = dbPageNum + 1;
+
+        // If virtual page is even (Right side), subtract 1 to get Spread Left.
+        // If virtual page is odd (Left side), use it as is.
+        const targetSpreadLeft = virtualPageNum % 2 === 0 ? virtualPageNum - 1 : virtualPageNum;
+
+        setCurrentLeftPageNum(targetSpreadLeft);
+        loadSpread(targetSpreadLeft);
+
+        // Decide animation direction based on current
+        if (targetSpreadLeft > currentLeftPageNum) setTurningDirection("next");
+        else if (targetSpreadLeft < currentLeftPageNum) setTurningDirection("prev");
+
+    }, [isAnimating, currentLeftPageNum]);
 
     // Keyboard Navigation
     useEffect(() => {
@@ -205,18 +261,30 @@ export function DiaryBook() {
         leftContent = null;
         rightContent = bookCoverContent;
     } else {
-        // Spread N: Page Left | Page Right
-        leftContent = leftPageData ? (
-            <DiaryPage
-                pageNumber={leftPageData.pageNumber}
-                content={leftPageData.content}
-                onContentChange={(c) => handleContentChange(leftPageData, c, true)}
-                date={new Date(leftPageData.modifiedAt)}
-                customDate={leftPageData.customDate}
-                onDateChange={(d) => handleDateChange(leftPageData, d, true)}
-            />
-        ) : <div className="p-8">Loading...</div>;
+        // Spread N
 
+        // Left Content: TOC (Page 1) or Diary Page
+        if (currentLeftPageNum === 1) {
+            leftContent = (
+                <TableOfContents
+                    pages={allPages}
+                    onNavigate={jumpToPage}
+                />
+            );
+        } else {
+            leftContent = leftPageData ? (
+                <DiaryPage
+                    pageNumber={leftPageData.pageNumber}
+                    content={leftPageData.content}
+                    onContentChange={(c) => handleContentChange(leftPageData, c, true)}
+                    date={new Date(leftPageData.modifiedAt)}
+                    customDate={leftPageData.customDate}
+                    onDateChange={(d) => handleDateChange(leftPageData, d, true)}
+                />
+            ) : <div className="p-8">Loading...</div>;
+        }
+
+        // Right Content: Diary Page
         rightContent = rightPageData ? (
             <DiaryPage
                 pageNumber={rightPageData.pageNumber}
