@@ -8,16 +8,20 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 11.8%; /* #1E1E1E */
-    --foreground: 0 0% 98%; /* #FAFAFA */
+    --background: 0 0% 11.8%;
+    /* #1E1E1E */
+    --foreground: 0 0% 98%;
+    /* #FAFAFA */
 
-    --card: 0 0% 14%; /* Slightly lighter than bg for pages */
+    --card: 0 0% 14%;
+    /* Slightly lighter than bg for pages */
     --card-foreground: 0 0% 98%;
 
     --popover: 0 0% 11.8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 0% 29%; /* #4A4A4A */
+    --primary: 0 0% 29%;
+    /* #4A4A4A */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 0 0% 20%;
@@ -26,7 +30,8 @@ body {
     --muted: 0 0% 20%;
     --muted-foreground: 0 0% 63.9%;
 
-    --accent: 210 14% 50%; /* #708090 */
+    --accent: 210 14% 50%;
+    /* #708090 */
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -35,7 +40,7 @@ body {
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 210 14% 60%;
-    
+
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -49,6 +54,7 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -60,23 +66,11 @@ body {
   }
 
   .notebook {
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     border-radius: var(--radius);
     overflow: hidden;
     border: 1px solid hsl(var(--border));
     position: relative;
-  }
-
-  .notebook::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 10%, rgba(0,0,0,0.4) 90%, rgba(0,0,0,0) 100%);
-    transform: translateX(-50%);
-    z-index: 10;
   }
 
   .page-texture {
@@ -89,5 +83,301 @@ body {
     background-color: hsl(var(--background) / 0.8);
     background-image: radial-gradient(hsl(var(--accent) / 0.05) 1px, transparent 1px);
     background-size: 1.5rem 1.5rem;
+  }
+
+  /* 3D Book Page Turn Styles */
+  .book-container {
+    perspective: 2000px;
+    perspective-origin: center center;
+    width: 100%;
+    user-select: none;
+  }
+
+  .book-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 2 / 3;
+    transform-style: preserve-3d;
+    margin: 0 auto;
+  }
+
+  .page-3d {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+  }
+
+  .page-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  .page-front {
+    z-index: 2;
+  }
+
+  .page-back {
+    transform: rotateY(180deg);
+    z-index: 1;
+  }
+
+  /* Shadow that appears during page flip */
+  .page-flip-shadow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right,
+        transparent 0%,
+        rgba(0, 0, 0, 0.15) 45%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.15) 55%,
+        transparent 100%);
+    pointer-events: none;
+    z-index: 10;
+    border-radius: var(--radius);
+  }
+
+  /* Interactive page corner for click-to-flip */
+  .page-corner {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    z-index: 20;
+    background: linear-gradient(135deg,
+        transparent 50%,
+        hsl(var(--foreground) / 0.05) 50%,
+        hsl(var(--foreground) / 0.1) 100%);
+    border-radius: 0 0 var(--radius) 0;
+    transition: all 0.3s ease;
+  }
+
+  .page-corner:hover {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg,
+        transparent 40%,
+        hsl(var(--foreground) / 0.08) 40%,
+        hsl(var(--foreground) / 0.15) 100%);
+  }
+
+  .page-corner::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid hsl(var(--foreground) / 0.3);
+    border-bottom: 2px solid hsl(var(--foreground) / 0.3);
+    transform: rotate(-45deg);
+    transition: all 0.3s ease;
+  }
+
+  .page-corner:hover::after {
+    border-color: hsl(var(--foreground) / 0.5);
+  }
+
+  /* Back button for returning to front page */
+  .page-corner-back {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    z-index: 20;
+    background: linear-gradient(-135deg,
+        transparent 50%,
+        hsl(var(--foreground) / 0.05) 50%,
+        hsl(var(--foreground) / 0.1) 100%);
+    border-radius: 0 0 0 var(--radius);
+    transition: all 0.3s ease;
+  }
+
+  .page-corner-back:hover {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(-135deg,
+        transparent 40%,
+        hsl(var(--foreground) / 0.08) 40%,
+        hsl(var(--foreground) / 0.15) 100%);
+  }
+
+  .page-corner-back::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+    border-left: 2px solid hsl(var(--foreground) / 0.3);
+    border-bottom: 2px solid hsl(var(--foreground) / 0.3);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+  }
+
+  .page-corner-back:hover::after {
+    border-color: hsl(var(--foreground) / 0.5);
+  }
+
+  /* Diary-specific styles */
+  .diary-page-container {
+    background-color: hsl(var(--card));
+    position: relative;
+  }
+
+  .diary-ruled-lines {
+    background-image: repeating-linear-gradient(transparent,
+        transparent 35px,
+        hsl(var(--foreground) / 0.05) 35px,
+        hsl(var(--foreground) / 0.05) 36px);
+    background-size: 100% 36px;
+    background-position: 0 0;
+  }
+
+  .diary-margin {
+    position: absolute;
+    left: 48px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: hsl(var(--accent) / 0.2);
+  }
+
+  .diary-page-header {
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  .diary-page-footer {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  /* Book cover styles */
+  .book-cover {
+    background: linear-gradient(135deg,
+        hsl(var(--primary)) 0%,
+        hsl(var(--primary) / 0.8) 100%);
+    border: 2px solid hsl(var(--border));
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, hsl(var(--foreground) / 0.02) 0%, transparent 50%),
+      repeating-linear-gradient(90deg,
+        transparent,
+        transparent 2px,
+        hsl(var(--foreground) / 0.01) 2px,
+        hsl(var(--foreground) / 0.01) 4px);
+    pointer-events: none;
+  }
+
+  .book-spine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right,
+        hsl(var(--background) / 0.8),
+        hsl(var(--primary) / 0.4));
+    border-right: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: inset -2px 0 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .book-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Page stack effect for depth */
+  .page-stack-effect {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    left: 4px;
+    height: 100%;
+    background: hsl(var(--card) / 0.5);
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border) / 0.3);
+    z-index: -1;
+  }
+
+  .page-stack-effect::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    left: 4px;
+    height: 100%;
+    background: hsl(var(--card) / 0.3);
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border) / 0.2);
+    z-index: -1;
+  }
+
+  /* Book controls */
+  .book-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    background: hsl(var(--background) / 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  /* Smooth transitions for book interactions */
+  .book-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Two-page spread layout */
+  .diary-spread {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  .diary-spread-left {
+    border-right: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  .diary-spread-right {
+    border-left: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  /* Spine shadow in the middle of spread */
+  .diary-spread::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    transform: translateX(-50%);
+    background: linear-gradient(to right,
+        transparent,
+        rgba(0, 0, 0, 0.1) 50%,
+        transparent);
+    pointer-events: none;
+    z-index: 10;
   }
 }
