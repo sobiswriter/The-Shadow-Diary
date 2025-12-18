@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/utils";
+import { HauntedEditor } from "./HauntedEditor";
 
 interface DiaryPageProps {
     pageNumber: number;
@@ -13,6 +13,10 @@ interface DiaryPageProps {
     date?: Date;
     customDate?: string;
     onDateChange?: (date: string) => void;
+    onPause?: () => void;
+    suggestion?: string | null;
+    onAcceptSuggestion?: () => void;
+    onDiscardSuggestion?: () => void;
 }
 
 export function DiaryPage({
@@ -24,6 +28,10 @@ export function DiaryPage({
     date = new Date(),
     customDate,
     onDateChange,
+    onPause,
+    suggestion,
+    onAcceptSuggestion,
+    onDiscardSuggestion,
 }: DiaryPageProps) {
     const [localContent, setLocalContent] = useState(content);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -76,28 +84,20 @@ export function DiaryPage({
                 {/* Left margin indicator */}
                 <div className="diary-margin absolute left-12 top-0 bottom-0 w-px bg-accent/20" />
 
-                {/* Content textarea */}
-                <Textarea
-                    ref={textareaRef}
-                    value={localContent}
-                    onChange={handleChange}
-                    placeholder={pageNumber === 1 ? "Dear Diary..." : "Continue writing..."}
+                {/* Content Area */}
+                <HauntedEditor
+                    content={localContent}
+                    onContentChange={(newContent) => {
+                        setLocalContent(newContent);
+                        onContentChange(newContent);
+                    }}
+                    onPause={onPause}
+                    suggestion={suggestion}
+                    onAcceptSuggestion={onAcceptSuggestion}
+                    onDiscardSuggestion={onDiscardSuggestion}
                     disabled={!isEditable}
-                    className="
-            w-full h-full
-            bg-transparent
-            border-none
-            focus-visible:ring-0 
-            focus-visible:ring-offset-0
-            text-base leading-[36px]
-            resize-none
-            p-0
-            pl-8
-            font-body
-            text-foreground/90
-            placeholder:text-muted-foreground/40
-            diary-ruled-lines
-          "
+                    className="pl-8 diary-ruled-lines"
+                    placeholder={pageNumber === 1 ? "Dear Diary..." : "Continue writing..."}
                 />
             </div>
 

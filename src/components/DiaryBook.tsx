@@ -15,6 +15,9 @@ import {
     getAllPages,
 } from "@/lib/diary";
 import { TableOfContents } from "./TableOfContents";
+import { generateShadowResponse } from "@/ai/flows/generate-shadow-response";
+
+import { Loader2 } from "lucide-react";
 
 export function DiaryBook() {
     // Current Left Page Number
@@ -69,11 +72,15 @@ export function DiaryBook() {
     // Animation Control
     const [turningDirection, setTurningDirection] = useState<"next" | "prev" | null>(null);
     const isAnimating = turningDirection !== null;
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     // Page Data State
     const [leftPageData, setLeftPageData] = useState<DiaryPageType | null>(null);
     const [rightPageData, setRightPageData] = useState<DiaryPageType | null>(null);
     const [allPages, setAllPages] = useState<DiaryPageType[]>([]);
+
+    // Ghost Text State
+    const [ghostSuggestion, setGhostSuggestion] = useState<string | null>(null);
 
     useEffect(() => {
         initializeDiary();
@@ -143,6 +150,9 @@ export function DiaryBook() {
 
         // Update all pages list for TOC if title/date changes (though content change mainly updates preview)
         setAllPages(getAllPages());
+
+        // If content changes, clear any ghost suggestion
+        setGhostSuggestion(null);
     }, []);
 
     const handleDateChange = useCallback((pageData: DiaryPageType, newDate: string, isLeft: boolean) => {
@@ -154,6 +164,30 @@ export function DiaryBook() {
 
         setAllPages(getAllPages());
     }, []);
+
+    const handleGhostPause = useCallback(async () => {
+        // Only trigger if content exists and not already analyzing
+        if (!rightPageData || !rightPageData.content || rightPageData.content.length < 10 || isAnalyzing) {
+            return;
+        }
+
+        setIsAnalyzing(true);
+        try {
+            // Strip HTML for the AI prompt (simplified)
+            const plainText = rightPageData.content.replace(/<[^>]*>/g, ' ');
+            const { shadowResponse } = await generateShadowResponse({ journalEntry: plainText });
+
+            // Set as suggestion instead of modifying content immediately
+            if (shadowResponse && shadowResponse.trim().length > 0) {
+                setGhostSuggestion(shadowResponse);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    }, [rightPageData, isAnalyzing]); // Updated dep: isAnalyzing is redundant if using functional set? No, it's fine.
+
 
     const goToNextSpread = useCallback(() => {
         if (isAnimating) return;
@@ -286,16 +320,25 @@ export function DiaryBook() {
 
         // Right Content: Diary Page
         rightContent = rightPageData ? (
-            <DiaryPage
-                pageNumber={rightPageData.pageNumber}
-                content={rightPageData.content}
-                onContentChange={(c) => handleContentChange(rightPageData, c, false)}
-                date={new Date(rightPageData.modifiedAt)}
-                customDate={rightPageData.customDate}
-                onDateChange={(d) => handleDateChange(rightPageData, d, false)}
-            />
+            <>
+                <DiaryPage
+                    pageNumber={rightPageData.pageNumber}
+                    content={rightPageData.content}
+                    onContentChange={(c) => handleContentChange(rightPageData, c, false)}
+                    date={new Date(rightPageData.modifiedAt)}
+                    customDate={rightPageData.customDate}
+                    onDateChange={(d) => handleDateChange(rightPageData, d, false)}
+                    onPause={handleGhostPause}
+                    suggestion={ghostSuggestion}
+                    onAcceptSuggestion={() => setGhostSuggestion(null)}
+                    onDiscardSuggestion={() => setGhostSuggestion(null)}
+                />
+            </>
         ) : <div className="p-8">Loading...</div>;
     }
+
+    // Determine if we should show the "Summon Shadow" button - REMOVED
+
 
     return (
         <div className="w-full max-w-6xl relative h-[600px] flex flex-col justify-center">
@@ -315,6 +358,9 @@ export function DiaryBook() {
                         <ChevronRight className="h-4 w-4" />
                     </Button>
                     <div className="w-px h-4 bg-border mx-2" />
+
+                    {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mr-2" />}
+
                     <BookControls onDataChange={() => loadSpread(currentLeftPageNum)} />
                     <Button variant="ghost" size="icon" onClick={() => { setCurrentLeftPageNum(0); loadSpread(0); setTurningDirection("prev"); }} className="h-8 w-8 ml-1" disabled={currentLeftPageNum === 0}>
                         <X className="h-4 w-4" />
@@ -336,7 +382,20 @@ export function DiaryBook() {
                     setTurningDirection("prev");
                 }}
                 bookState={currentLeftPageNum === 0 ? "closed" : "open"}
+            // Pass overlay content for Loose Leaf?
+            // TwoPageBook doesn't support generic overlays yet, let's inject it via rightContent for now or overlay it absolutely here.
+            // Actually TwoPageBook clips content. Best to place it INSIDE rightContent if possible, or pass as overlay.
+            // Let's modify TwoPageBook to accept 'rightOverlay' prop or just stick it in rightContent if it fits?
+            // Sticking it in rightContent might be clipped by the page boundary, which is good!
             />
+            {/* Overlay for right page (rendered outside TwoPageBook to avoid clipping context? No, we WANT clipping to page) */}
+            {/* Wait, TwoPageBook 'rightContent' is INSIDE the page div. So LooseLeaf will be clipped to the page. Perfect. */}
+
+            {/* We need to inject LooseLeaf into the rightContent passed to TwoPageBook */}
+
+            {/* Refined rightContent construction to include LooseLeaf */}
+            {/* But we already constructed 'rightContent' above. Let's wrap it? */}
+
 
             {/* Hint for interaction when closed */}
             {currentLeftPageNum === 0 && (

@@ -8,6 +8,7 @@ export type DiaryPage = {
     modifiedAt: string;
     title?: string;
     customDate?: string;
+    shadowResponse?: string;
 };
 
 const DIARY_KEY = "normal_diary_pages";
