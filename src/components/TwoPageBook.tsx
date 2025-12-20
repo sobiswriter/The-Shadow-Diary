@@ -90,7 +90,7 @@ export function TwoPageBook({
     return (
         <div className={cn("perspective-[2000px] w-full h-full flex justify-center items-center select-none", className)}>
             <div className={cn(
-                "relative flex w-full h-full max-w-6xl shadow-2xl rounded-sm transition-transform duration-1000 ease-in-out bg-neutral-900",
+                "relative flex w-full h-full max-w-6xl transition-transform duration-1000 ease-in-out bg-transparent",
                 translateClass
             )}>
 
@@ -107,10 +107,7 @@ export function TwoPageBook({
                 {/* LEFT BASE PAGE */}
                 <div
                     className={cn(
-                        "w-1/2 h-full bg-[#1a1a1a] relative overflow-hidden rounded-l-md border-r border-white/5 shadow-[-10px_0_20px_rgba(0,0,0,0.5)_inset] z-0",
-                        // Removed full page cursor/hover effect
-                        // Hide visual if content is null (e.g. closed book left side)
-                        // But keep layout dimension
+                        "w-1/2 h-full bg-transparent relative overflow-hidden rounded-l-md border-r border-white/5 z-0",
                     )}
                 >
                     {/* Left Page Touch Zone - Navigates Prev */}
@@ -135,7 +132,7 @@ export function TwoPageBook({
                 {/* RIGHT BASE PAGE */}
                 <div
                     className={cn(
-                        "w-1/2 h-full bg-[#1a1a1a] relative overflow-hidden rounded-r-md border-l border-white/5 shadow-[10px_0_20px_rgba(0,0,0,0.5)_inset] z-0",
+                        "w-1/2 h-full bg-transparent relative overflow-hidden rounded-r-md border-l border-white/5 z-0",
                     )}
                 >
                     {/* Right Page Touch Zone - Navigates Next */}
@@ -161,17 +158,17 @@ export function TwoPageBook({
                 {/* Only visible when book is open */}
                 {bookState === "open" && onBookmarkClick && (
                     <div
-                        className="absolute -top-4 right-16 z-50 cursor-pointer group transition-transform duration-300 hover:-translate-y-2"
+                        className="absolute -top-12 right-16 z-50 cursor-pointer group transition-all duration-500 hover:top-[-4px] opacity-20 hover:opacity-100"
                         onClick={(e) => {
                             e.stopPropagation();
                             onBookmarkClick();
                         }}
                         title="Close Diary"
                     >
-                        <div className="w-8 h-32 bg-red-950/80 shadow-md backdrop-blur-sm relative flex flex-col items-center justify-end pb-4 transition-colors group-hover:bg-red-900">
+                        <div className="w-8 h-32 bg-zinc-200/10 shadow-lg backdrop-blur-[2px] relative flex flex-col items-center justify-end pb-4 border-x border-white/5 group-hover:bg-zinc-100/20 transition-colors">
                             {/* Stitching detail */}
-                            <div className="absolute top-0 bottom-0 left-1 w-px border-l border-dashed border-white/20" />
-                            <div className="absolute top-0 bottom-0 right-1 w-px border-r border-dashed border-white/20" />
+                            <div className="absolute top-0 bottom-0 left-1 w-px border-l border-dashed border-white/10" />
+                            <div className="absolute top-0 bottom-0 right-1 w-px border-r border-dashed border-white/10" />
 
                             {/* Bottom triangle cut */}
                             <div className="absolute bottom-0 w-full h-8 bg-[#1a1a1a]" style={{ clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' }} />

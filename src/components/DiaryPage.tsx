@@ -90,9 +90,9 @@ export function DiaryPage({
                 {pageNumber % 2 === 0 ? (
                     /* Shadow Page (Read Only, Typewriter Style, Animated) */
                     <div className="pl-8 pt-4 h-full overflow-hidden">
-                        <div className="font-mono text-sm tracking-widest leading-loose text-red-400/90 opacity-90 select-none pointer-events-none" style={{ fontFamily: '"Courier Prime", monospace' }}>
-                            <div className="mb-4 text-xs uppercase tracking-[0.2em] border-b border-red-400/30 pb-2 text-red-300/50">
-                                Shadow Analysis • {formatDate(date)}
+                        <div className="font-mono text-sm tracking-widest leading-loose text-zinc-100/80 opacity-90 select-none pointer-events-none" style={{ fontFamily: '"Courier Prime", monospace' }}>
+                            <div className="mb-4 text-xs uppercase tracking-[0.2em] border-b border-zinc-500/30 pb-2 text-zinc-400/50">
+                                Shadow Mirror • {formatDate(date)}
                             </div>
                             <TypewriterText content={localContent} speed={20} />
                         </div>

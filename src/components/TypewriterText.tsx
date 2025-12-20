@@ -42,39 +42,44 @@ export function TypewriterText({ content, speed = 15, className }: TypewriterTex
     // If we use `dangerouslySetInnerHTML`, checking completion.
 
     useEffect(() => {
-        // If content changes, reset
+        if (!content) {
+            setDisplayedContent("");
+            return;
+        }
+
         setDisplayedContent("");
-        let i = 0;
 
-        // Strip HTML tags for the 'typing' effect to work purely on text? 
-        // No, that loses formatting. 
-        // Let's just render it fully for now to avoid breaking the layout,
-        // but maybe 'flash' or 'flicker' it in.
+        let currentIndex = 0;
+        const fullContent = content;
 
-        // Actually, if we just type the *textContent*, we lose the <p> tags.
-        // Let's just use `displayedContent` equal to `content` for now, 
-        // but adding a "typing" cursor effect or similar?
+        // This is a complex typing effect for HTML.
+        // To avoid breaking tags, we can either:
+        // 1. Progressively reveal the string but only update state when not inside a tag.
+        // 2. Or simply use a CSS-based reveal (cleaner for complex HTML).
 
-        // Re-reading user request: "have that typing stuff n all".
-        // Maybe he means the AI *streaming* response?
-        // But we are generating it all at once to save it to DB.
+        // Let's implement a logical typewriter that skips tags.
+        const interval = setInterval(() => {
+            if (currentIndex >= fullContent.length) {
+                clearInterval(interval);
+                return;
+            }
 
-        // Let's stick to a simple progressive reveal.
-        if (!content) return;
+            // Find the next "safe" point to stop (not in the middle of a tag)
+            let nextIndex = currentIndex + 1;
 
-        const timer = setInterval(() => {
-            // Naive typing: slice the string. 
-            // BEWARE: Slicing HTML string `<p>Hello</p>` -> `<p>He` ... BROKEN HTML.
-            // We cannot slice HTML strings.
+            // If we are starting a tag, find the end of it
+            if (fullContent[currentIndex] === '<') {
+                while (nextIndex < fullContent.length && fullContent[nextIndex] !== '>') {
+                    nextIndex++;
+                }
+                nextIndex++; // Include the closing '>'
+            }
 
-            // Setup: Just render the content.
-            // The user is likely seeing "nothing" because of the previous styling bug.
-            // Visual typing is a nice-to-have but breaking HTML is bad.
-            setDisplayedContent(content);
-            clearInterval(timer);
+            setDisplayedContent(fullContent.slice(0, nextIndex));
+            currentIndex = nextIndex;
         }, speed);
 
-        return () => clearInterval(timer);
+        return () => clearInterval(interval);
     }, [content, speed]);
 
     return (
