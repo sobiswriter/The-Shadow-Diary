@@ -83,6 +83,9 @@ export function DiaryBook() {
     // Ghost Text State
     const [ghostSuggestion, setGhostSuggestion] = useState<string | null>(null);
 
+    // Audio State
+    const [isMuted, setIsMuted] = useState(false);
+
     useEffect(() => {
         initializeDiary();
         updateTotalPages();
@@ -390,6 +393,7 @@ export function DiaryBook() {
                     date={new Date(leftPageData.modifiedAt)}
                     customDate={leftPageData.customDate}
                     onDateChange={(d) => handleDateChange(leftPageData, d, true)}
+                    isMuted={isMuted}
                 />
             ) : <div className="p-8">Loading...</div>;
         }
@@ -408,6 +412,7 @@ export function DiaryBook() {
                     suggestion={ghostSuggestion}
                     onAcceptSuggestion={() => setGhostSuggestion(null)}
                     onDiscardSuggestion={() => setGhostSuggestion(null)}
+                    isMuted={isMuted}
                 />
             </>
         ) : <div className="p-8">Loading...</div>;
@@ -437,7 +442,11 @@ export function DiaryBook() {
 
                     {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mr-2" />}
 
-                    <BookControls onDataChange={() => loadSpread(currentLeftPageNum)} />
+                    <BookControls
+                        isMuted={isMuted}
+                        onMuteToggle={() => setIsMuted(!isMuted)}
+                        onDataChange={() => loadSpread(currentLeftPageNum)}
+                    />
                     <Button variant="ghost" size="icon" onClick={() => { setCurrentLeftPageNum(0); loadSpread(0); setTurningDirection("prev"); }} className="h-8 w-8 ml-1" disabled={currentLeftPageNum === 0}>
                         <X className="h-4 w-4" />
                     </Button>

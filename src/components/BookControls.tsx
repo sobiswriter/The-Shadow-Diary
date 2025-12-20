@@ -24,6 +24,8 @@ import {
     Upload,
     Trash2,
     FileJson,
+    Volume2,
+    VolumeX,
 } from "lucide-react";
 import { useState, useRef } from "react";
 import { exportDiary, importDiary, clearDiary } from "@/lib/diary";
@@ -31,9 +33,11 @@ import { useToast } from "@/hooks/use-toast";
 
 interface BookControlsProps {
     onDataChange?: () => void;
+    isMuted?: boolean;
+    onMuteToggle?: () => void;
 }
 
-export function BookControls({ onDataChange }: BookControlsProps) {
+export function BookControls({ onDataChange, isMuted, onMuteToggle }: BookControlsProps) {
     const [showClearDialog, setShowClearDialog] = useState(false);
     const [showImportDialog, setShowImportDialog] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -132,6 +136,20 @@ export function BookControls({ onDataChange }: BookControlsProps) {
                     <DropdownMenuItem onClick={handleImportClick}>
                         <Upload className="h-4 w-4 mr-2" />
                         Import Diary
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={onMuteToggle}>
+                        {isMuted ? (
+                            <>
+                                <Volume2 className="h-4 w-4 mr-2" />
+                                Unmute Sounds
+                            </>
+                        ) : (
+                            <>
+                                <VolumeX className="h-4 w-4 mr-2" />
+                                Mute Sounds
+                            </>
+                        )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

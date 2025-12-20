@@ -1,48 +1,57 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 interface TypewriterTextProps {
     content: string;
     speed?: number; // ms per char
     className?: string;
+    onComplete?: () => void;
+    isMuted?: boolean;
 }
 
-export function TypewriterText({ content, speed = 15, className }: TypewriterTextProps) {
+export function TypewriterText({ content, speed = 30, className, onComplete, isMuted }: TypewriterTextProps) {
     const [displayedContent, setDisplayedContent] = useState("");
-
-    // Simple HTML stripping for counting/typing or just safe rendering?
-    // If we type raw HTML tags, it looks bad. 
-    // But 'content' here is usually HTML from the Shadow Analysis (<div class="shadow-analysis"><p>...</p></div>).
-    // If we type char-by-char on HTML string, we break tags.
-    // So we must simply fade it in, OR render the final HTML and Typewrite the TEXT nodes.
-    // Complexity: High.
-
-    // Alternative: Just simple text typing. Shadow Analysis is mostly text.
-    // Let's strip tags for specific visuals? No, we want paragraphs.
-
-    // Easier approach for "Legacy" feel:
-    // Render the HTML fully, but use CSS animation to reveal it?
-    // Or logic: Parse HTML -> Typewriter Text Nodes.
-
-    // Let's try the CSS 'reveal' approach or a simple text-only typewriter if content is simple.
-    // Actually, the previous step wraps it in `<div class="shadow-analysis">...</div>`.
-
-    // For now, let's treat it as *text* if possible, or render deeply.
-    // Let's assume content is the *raw string* from AI if we can, but we saved HTML.
-
-    // Hack: Just display it. The user said "typing stuff".
-    // Let's implement a simple text-reveal if it's just text.
-    // If it contains tags, let's render it normally but maybe animate opacity of paragraphs.
-
-    // Let's go with formatted HTML rendering but animate the container.
-    // Wait, user explicitly said "typing stuff".
-
-    // Let's try to type it.
-    // If we use `dangerouslySetInnerHTML`, checking completion.
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
-        if (!content) {
+        // Initialize audio only once
+        if (typeof window !== "undefined") {
+            // Using a softer, more "thocky" typewriter sound
+            const audio = new Audio("https://www.soundjay.com/communication/typewriter-key-3.mp3");
+            audio.volume = 0.1;
+            audioRef.current = audio;
+        }
+    }, []);
+
+    const processedContent = useMemo(() => {
+        if (!content) return "";
+
+        // Simple heuristic: find words and randomly redact 1-2 of them.
+        // We only redact plain text words to avoid breaking HTML structure.
+        const parts = content.split(/(<[^>]*>)/);
+        let redactionCount = 0;
+        const maxRedactions = 2;
+
+        const results = parts.map(part => {
+            if (part.startsWith('<')) return part;
+
+            // In text parts, find candidate words (length > 5)
+            const words = part.split(/\b/);
+            return words.map(word => {
+                if (word.length > 5 && redactionCount < maxRedactions && Math.random() > 0.8) {
+                    redactionCount++;
+                    return `<span class="redacted">${word}</span>`;
+                }
+                return word;
+            }).join('');
+        });
+
+        return results.join('');
+    }, [content]);
+
+    useEffect(() => {
+        if (!processedContent) {
             setDisplayedContent("");
             return;
         }
@@ -50,29 +59,29 @@ export function TypewriterText({ content, speed = 15, className }: TypewriterTex
         setDisplayedContent("");
 
         let currentIndex = 0;
-        const fullContent = content;
+        const fullContent = processedContent;
 
-        // This is a complex typing effect for HTML.
-        // To avoid breaking tags, we can either:
-        // 1. Progressively reveal the string but only update state when not inside a tag.
-        // 2. Or simply use a CSS-based reveal (cleaner for complex HTML).
-
-        // Let's implement a logical typewriter that skips tags.
         const interval = setInterval(() => {
             if (currentIndex >= fullContent.length) {
                 clearInterval(interval);
+                onComplete?.();
                 return;
             }
 
-            // Find the next "safe" point to stop (not in the middle of a tag)
             let nextIndex = currentIndex + 1;
 
-            // If we are starting a tag, find the end of it
             if (fullContent[currentIndex] === '<') {
                 while (nextIndex < fullContent.length && fullContent[nextIndex] !== '>') {
                     nextIndex++;
                 }
-                nextIndex++; // Include the closing '>'
+                nextIndex++;
+            }
+
+            // Play sound if not muted
+            if (!isMuted && audioRef.current && nextIndex > currentIndex) {
+                const sound = audioRef.current.cloneNode() as HTMLAudioElement;
+                sound.volume = 0.02;
+                sound.play().catch(() => { });
             }
 
             setDisplayedContent(fullContent.slice(0, nextIndex));
@@ -80,7 +89,7 @@ export function TypewriterText({ content, speed = 15, className }: TypewriterTex
         }, speed);
 
         return () => clearInterval(interval);
-    }, [content, speed]);
+    }, [processedContent, speed, isMuted, onComplete]);
 
     return (
         <div
