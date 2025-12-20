@@ -10,6 +10,10 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC)](https://tailwindcss.com/)
 [![Radix UI](https://img.shields.io/badge/Radix-Primitives-white)](https://www.radix-ui.com/)
 
+<br />
+<br />
+<img src="public/assets/image.png" alt="The Shadow Diary Preview" width="800" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+
 </div>
 
 ---
