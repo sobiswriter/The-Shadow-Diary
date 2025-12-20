@@ -317,19 +317,27 @@ export function DiaryBook() {
     // ... Book Cover Content ...
     const bookCoverContent = (
         <div className="h-full w-full book-cover flex items-center justify-center relative shadow-inner select-none pointer-events-none group">
-            {/* Remove big spine divs, using TwoPageBook spine */}
+            {/* Ribbon Bookmark - Ghostly Version */}
             <div className="absolute top-0 right-12 w-8 h-full">
-                <div className="w-full h-32 bg-accent/40 shadow-lg" style={{
-                    clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%)'
-                }} />
+                <div className="w-full h-32 bg-zinc-200/10 backdrop-blur-[1px] shadow-sm border-x border-white/5" style={{
+                    clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%)'
+                }}>
+                    <div className="absolute top-0 bottom-0 left-1 w-px border-l border-dashed border-white/5" />
+                    <div className="absolute top-0 bottom-0 right-1 w-px border-r border-dashed border-white/5" />
+                </div>
             </div>
-            <div className="flex flex-col items-center justify-center gap-6 px-12">
-                <BookOpen className="h-20 w-20 text-foreground/80 transform group-hover:scale-110 transition-transform duration-500" />
-                <h1 className="book-title text-3xl md:text-5xl text-foreground/90 text-center font-bold tracking-wider">My Diary</h1>
-                <p className="text-sm text-foreground/50 font-headline tracking-widest uppercase mt-4">Confidential</p>
+
+            <div className="flex flex-col items-center justify-center gap-4 px-12">
+                <div className="w-16 h-1 w-px bg-zinc-500/20 mb-8" />
+                <h1 className="book-title text-3xl md:text-5xl text-zinc-100/80 text-center font-bold tracking-[0.2em] leading-tight">
+                    THE SHADOW <br /> DIARY
+                </h1>
+                <div className="w-16 h-1 w-px bg-zinc-500/20 mt-8" />
             </div>
-            {/* Texture overlay */}
-            <div className="absolute inset-0 bg-noise opacity-10 mix-blend-overlay" />
+
+            {/* Subtle atmospheric vignette */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+            <div className="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay" />
         </div>
     );
 
