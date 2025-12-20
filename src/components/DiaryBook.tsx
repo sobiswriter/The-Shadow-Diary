@@ -316,10 +316,15 @@ export function DiaryBook() {
 
     // ... Book Cover Content ...
     const bookCoverContent = (
-        <div className="h-full w-full book-cover flex items-center justify-center relative shadow-inner select-none pointer-events-none group">
-            {/* Ribbon Bookmark - Ghostly Version */}
+        <div className="h-full w-full book-cover flex items-center justify-center relative shadow-inner select-none pointer-events-none group overflow-hidden"
+            style={{
+                background: 'radial-gradient(circle at 30% 20%, #2a2a2a 0%, #1a1a1a 100%)',
+                boxShadow: 'inset 0 0 100px rgba(0,0,0,0.8)'
+            }}>
+
+            {/* Ghostly Ribbon Bookmark */}
             <div className="absolute top-0 right-12 w-8 h-full">
-                <div className="w-full h-32 bg-zinc-200/10 backdrop-blur-[1px] shadow-sm border-x border-white/5" style={{
+                <div className="w-full h-36 bg-zinc-200/10 backdrop-blur-[1px] shadow-sm border-x border-white/5" style={{
                     clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%)'
                 }}>
                     <div className="absolute top-0 bottom-0 left-1 w-px border-l border-dashed border-white/5" />
@@ -327,17 +332,33 @@ export function DiaryBook() {
                 </div>
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-4 px-12">
-                <div className="w-16 h-1 w-px bg-zinc-500/20 mb-8" />
-                <h1 className="book-title text-3xl md:text-5xl text-zinc-100/80 text-center font-bold tracking-[0.2em] leading-tight">
+            {/* Ruined Texture Overlay (Water damage / wear) */}
+            <div className="absolute inset-0 opacity-40 pointer-events-none" style={{
+                backgroundImage: `
+                    radial-gradient(circle at 10% 10%, rgba(0,0,0,0.4) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(0,0,0,0.5) 0%, transparent 50%),
+                    linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%)
+                `,
+                backgroundSize: '100% 100%, 100% 100%, 4px 4px'
+            }} />
+
+            {/* Scratched Corners */}
+            <div className="absolute top-0 left-0 w-16 h-16 opacity-30 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%)', clipPath: 'polygon(0 0, 100% 0, 0 100%)' }} />
+            <div className="absolute bottom-0 right-0 w-24 h-24 opacity-20 pointer-events-none" style={{ background: 'linear-gradient(-45deg, rgba(255,255,255,0.1) 0%, transparent 100%)', clipPath: 'polygon(100% 100%, 0 100%, 100% 0)' }} />
+
+            <div className="flex flex-col items-center justify-center gap-4 px-12 z-10">
+                <div className="w-12 h-[1px] bg-neutral-800 mb-6" />
+                <h1 className="book-title text-3xl md:text-5xl text-center font-bold tracking-[0.25em] leading-tight" style={{
+                    color: '#8E8E8E', // Tarnished Silver
+                    textShadow: '1px 1px 0px rgba(0,0,0,0.8), -0.5px -0.5px 0px rgba(255,255,255,0.05)', // Debossed effect
+                }}>
                     THE SHADOW <br /> DIARY
                 </h1>
-                <div className="w-16 h-1 w-px bg-zinc-500/20 mt-8" />
+                <div className="w-12 h-[1px] bg-neutral-800 mt-6" />
             </div>
 
-            {/* Subtle atmospheric vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
-            <div className="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay" />
+            {/* Final grit overlay */}
+            <div className="absolute inset-0 bg-noise opacity-[0.04] mix-blend-overlay" />
         </div>
     );
 
@@ -454,8 +475,9 @@ export function DiaryBook() {
 
             {/* Hint for interaction when closed */}
             {currentLeftPageNum === 0 && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-foreground/30 text-sm animate-pulse pointer-events-none">
-                    Click cover to open
+                <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-zinc-500/40 text-sm font-serif italic tracking-widest animate-pulse pointer-events-none text-center">
+                    “Sometimes dead is better.” <br />
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-sans not-italic mt-2 opacity-60">— Stephen King</span>
                 </div>
             )}
         </div>

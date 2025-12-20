@@ -94,13 +94,19 @@ export function TwoPageBook({
                 translateClass
             )}>
 
-                {/* Spiral Spine (Always centered in the book container) */}
-                <div className="absolute left-1/2 top-0 bottom-0 w-12 -ml-6 z-40 flex flex-col justify-center items-center pointer-events-none">
-                    <div className="h-full w-full bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 shadow-inner rounded-sm ring-1 ring-white/5" />
-                    <div className="absolute top-8 bottom-8 w-full flex flex-col justify-between items-center py-2 gap-3">
-                        {Array.from({ length: 16 }).map((_, i) => (
-                            <div key={i} className="w-14 h-4 bg-gradient-to-b from-neutral-500 to-neutral-700 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.8)] transform -rotate-[3deg]" />
-                        ))}
+                {/* Traditional Weathered Spine */}
+                <div className="absolute left-1/2 top-0 bottom-0 w-14 -ml-7 z-40 pointer-events-none">
+                    <div className="h-full w-full bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 shadow-inner relative overflow-hidden">
+                        {/* Frayed Edges Detail */}
+                        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-transparent to-neutral-800/20" style={{ clipPath: 'polygon(0 0, 10% 50%, 20% 0, 30% 60%, 40% 0, 50% 55%, 60% 0, 70% 65%, 80% 0, 90% 50%, 100% 0, 100% 100%, 0 100%)' }} />
+                        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-t from-transparent to-neutral-800/20" style={{ clipPath: 'polygon(0 100%, 10% 50%, 20% 100%, 30% 40%, 40% 100%, 50% 45%, 60% 100%, 70% 35%, 80% 100%, 90% 50%, 100% 100%, 100% 0, 0 0)' }} />
+
+                        {/* Spine Creases */}
+                        <div className="absolute inset-y-0 left-2 w-px bg-white/5 shadow-sm" />
+                        <div className="absolute inset-y-0 right-2 w-px bg-white/5 shadow-sm" />
+
+                        {/* Wear and Tear */}
+                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,_rgba(0,0,0,0)_0%,_rgba(0,0,0,0.8)_100%)]" />
                     </div>
                 </div>
 
