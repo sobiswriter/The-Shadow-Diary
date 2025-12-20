@@ -61,8 +61,6 @@ The core concept of "The Shadow"—an AI persona that analyzes your entries usin
   - [x] Instant Inference (Gemini Flash)
 - [ ] **Phase 3: Future Hauntings** (Planned)
   - [x] **Audio Immersion**: Mechanical typewriter sounds and optional muted experience.
-  - [ ] **Atmospheric Visuals**: Text flickering (like a dying candle) and reactive background lighting based on mood.
-  - [ ] **Long-Term Memory**: The Shadow remembers past entries to make deeper, more grudging connections.
   - [ ] **Desktop Application**: Future plan to package the diary as a standalone Electron/Tauri app for native OS integration and offline dominance.
 
 ---
