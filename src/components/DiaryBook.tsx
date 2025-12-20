@@ -121,11 +121,22 @@ export function DiaryBook() {
     // 2. It's currently empty (hasn't been analyzed yet)
     // 3. The previous page (User's page) has content
     const checkAndTriggerShadowAnalysis = async (shadowPage: DiaryPageType, userPageNum: number) => {
-        if (shadowPage.content.trim().length > 0) return; // Already analyzed
         if (isAnalyzing) return;
 
         const userPage = getPage(userPageNum);
         if (!userPage || userPage.content.trim().length < 20) return; // Not enough content to analyze
+
+        // Check if we need to analyze:
+        // 1. Shadow page is empty (First time)
+        // 2. OR User page has been modified AFTER the shadow page (Re-analysis)
+        if (shadowPage.content.trim().length > 0) {
+            const userModified = new Date(userPage.modifiedAt).getTime();
+            const shadowModified = new Date(shadowPage.modifiedAt).getTime();
+
+            // If the user page hasn't been updated since the last shadow analysis, skip.
+            // (User Page Timestamp <= Shadow Page Timestamp)
+            if (userModified <= shadowModified) return;
+        }
 
         setIsAnalyzing(true);
         try {

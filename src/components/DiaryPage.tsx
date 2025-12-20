@@ -96,7 +96,7 @@ export function DiaryPage({
                 {pageNumber % 2 === 0 ? (
                     /* Shadow Page (Read Only, Archival Document Style) */
                     <div className="px-12 md:px-16 pt-12 h-full relative overflow-hidden flex flex-col">
-                        <div className="flex-1 overflow-y-auto diary-scrollbar pr-2 mb-16 distressed-typewriter select-none pointer-events-none">
+                        <div className="flex-1 overflow-y-auto diary-scrollbar pr-2 mb-16 distressed-typewriter select-none">
                             <TypewriterText
                                 content={localContent}
                                 speed={40}

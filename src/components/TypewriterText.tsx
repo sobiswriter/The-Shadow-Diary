@@ -50,6 +50,12 @@ export function TypewriterText({ content, speed = 30, className, onComplete, isM
         return results.join('');
     }, [content]);
 
+    const onCompleteRef = useRef(onComplete);
+
+    useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
+
     useEffect(() => {
         if (!processedContent) {
             setDisplayedContent("");
@@ -64,7 +70,7 @@ export function TypewriterText({ content, speed = 30, className, onComplete, isM
         const interval = setInterval(() => {
             if (currentIndex >= fullContent.length) {
                 clearInterval(interval);
-                onComplete?.();
+                onCompleteRef.current?.();
                 return;
             }
 
@@ -89,7 +95,7 @@ export function TypewriterText({ content, speed = 30, className, onComplete, isM
         }, speed);
 
         return () => clearInterval(interval);
-    }, [processedContent, speed, isMuted, onComplete]);
+    }, [processedContent, speed, isMuted]);
 
     return (
         <div
