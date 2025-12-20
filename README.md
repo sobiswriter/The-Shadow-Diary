@@ -51,10 +51,14 @@ The core concept of "The Shadow"—an AI persona that analyzes your entries usin
   - [x] 3D Page Turning (Sheet flipping)
   - [x] Interactive Click Zones
   - [x] Schemeless Navigation
-- [ ] **Phase 2: The Shadow Returns** (In Progress)
-  - [ ] Connect Gemini/Genkit AI to the new `DiaryBook` architecture
-  - [ ] Implement "Shadow Responses" as marginalia or inserted letters
-  - [ ] Monthly Psychological Reporting
+- [x] **Phase 2: The Shadow Copilot** (Completed)
+  - [x] Autonomous "Haunted Editor" (ContentEditable)
+  - [x] Inline Ghost Text Completion (VS Code style)
+  - [x] Instant Inference (Gemini Flash)
+- [ ] **Phase 3: Future Hauntings** (Planned)
+  - [ ] **Audio Immersion**: Rustling paper, scratching quills, and unintelligible AI whispers.
+  - [ ] **Atmospheric Visuals**: Text flickering (like a dying candle) and reactive background lighting based on mood.
+  - [ ] **Long-Term Memory**: The Shadow remembers past entries to make deeper, more grudging connections.
 
 ---
 
