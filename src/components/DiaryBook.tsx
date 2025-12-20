@@ -16,6 +16,7 @@ import {
 } from "@/lib/diary";
 import { TableOfContents } from "./TableOfContents";
 import { generateShadowResponse } from "@/ai/flows/generate-shadow-response";
+import { generateShadowAnalysis } from "@/ai/flows/generate-shadow-analysis";
 
 import { Loader2 } from "lucide-react";
 
@@ -101,6 +102,55 @@ export function DiaryBook() {
     // Virtual Book Page 4 (Right) = DB Page 3
     // General: DB Page N = Virtual Page (N + 1)
 
+    const createNewPage = (pageNum: number): DiaryPageType => {
+        return {
+            id: `page-${pageNum}-${Date.now()}`,
+            pageNumber: pageNum,
+            content: "",
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
+        };
+    };
+
+    // Trigger Shadow Analysis for Even Pages (Shadow Pages)
+    // Only if:
+    // 1. It's an Even Page (Left side in our mapping, e.g., Page 2, 4...)
+    // 2. It's currently empty (hasn't been analyzed yet)
+    // 3. The previous page (User's page) has content
+    const checkAndTriggerShadowAnalysis = async (shadowPage: DiaryPageType, userPageNum: number) => {
+        if (shadowPage.content.trim().length > 0) return; // Already analyzed
+        if (isAnalyzing) return;
+
+        const userPage = getPage(userPageNum);
+        if (!userPage || userPage.content.trim().length < 20) return; // Not enough content to analyze
+
+        setIsAnalyzing(true);
+        try {
+            // Strip HTML
+            const plainText = userPage.content.replace(/<[^>]*>/g, ' ');
+            const { analysis } = await generateShadowAnalysis({ journalEntry: plainText });
+
+            if (analysis) {
+                // Format as simple HTML paragraphs for the Typewriter styling
+                // We wrap it in a special div to ensure styling consistency
+                const analysisHtml = `<div class="shadow-analysis">${analysis.split('\n').map(p => `<p>${p}</p>`).join('')}</div>`;
+
+                const updatedShadowPage = {
+                    ...shadowPage,
+                    content: analysisHtml,
+                    modifiedAt: new Date().toISOString()
+                };
+
+                savePage(updatedShadowPage);
+                setLeftPageData(updatedShadowPage); // Live update the view
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
     // Load a Spread
     const loadSpread = (leftNum: number) => {
         setAllPages(getAllPages()); // Refresh TOC data on every turn to be safe
@@ -119,7 +169,14 @@ export function DiaryBook() {
         } else {
             // Virtual Page N (where N > 1 and Odd) -> DB Page (N-1)
             const dbPageNum = leftNum - 1;
-            setLeftPageData(getPage(dbPageNum) || createNewPage(dbPageNum));
+            const leftPage = getPage(dbPageNum) || createNewPage(dbPageNum);
+            setLeftPageData(leftPage);
+
+            // Shadow Logic: If this is an EVEN DB page (e.g. Page 2), it's a Shadow Page.
+            // Triggers analysis of Page N-1 (Page 1).
+            if (dbPageNum % 2 === 0) {
+                checkAndTriggerShadowAnalysis(leftPage, dbPageNum - 1);
+            }
         }
 
         // Right Page Logic
@@ -129,16 +186,6 @@ export function DiaryBook() {
         // If leftNum=1 (TOC), Right=2. DB Page = 2-1 = 1.
 
         setRightPageData(getPage(dbPageNumRight) || createNewPage(dbPageNumRight));
-    };
-
-    const createNewPage = (pageNum: number): DiaryPageType => {
-        return {
-            id: `page-${pageNum}-${Date.now()}`,
-            pageNumber: pageNum,
-            content: "",
-            createdAt: new Date().toISOString(),
-            modifiedAt: new Date().toISOString(),
-        };
     };
 
     const handleContentChange = useCallback((pageData: DiaryPageType, newContent: string, isLeft: boolean) => {

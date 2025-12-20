@@ -45,7 +45,7 @@ export function TableOfContents({ pages, onNavigate }: TableOfContentsProps) {
                                             {page.customDate || formatDate(new Date(page.modifiedAt))}
                                         </span>
                                         <span className="text-xs text-muted-foreground/50 truncate max-w-[200px]">
-                                            {page.content.slice(0, 30) || "Empty page..."}...
+                                            {page.content.replace(/<[^>]*>/g, ' ').trim().slice(0, 30) || "Empty page..."}...
                                         </span>
                                     </div>
                                     <span className="text-sm font-serif text-foreground/60 whitespace-nowrap">
