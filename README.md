@@ -62,6 +62,7 @@ The core concept of "The Shadow"—an AI persona that analyzes your entries usin
 - [ ] **Phase 3: Future Hauntings** (Planned)
   - [x] **Audio Immersion**: Mechanical typewriter sounds and optional muted experience.
   - [ ] **Desktop Application**: Future plan to package the diary as a standalone Electron/Tauri app for native OS integration and offline dominance.
+  - [ ] **Stand Alone LLM Support**: Future plan to support standalone LLMs for offline use.
 
 ---
 

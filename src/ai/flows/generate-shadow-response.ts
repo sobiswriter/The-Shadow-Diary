@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   2. If the sentence is incomplete, finish it with a dark truth, a selfish desire, or the worst-case scenario.
   3. If the sentence is complete, whisper a paranoid doubt.
   4. Format: strictly lowercase. no periods.
-  5. Length: extremely short (3-10 words).
+  5. Length: extremely short (5-15 words).
   6. Output: ONLY the ghost text completion. Do NOT repeat the user's text.
 
   Journal Entry So Far: {{{journalEntry}}}
