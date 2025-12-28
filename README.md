@@ -49,7 +49,7 @@
 - **Tactile Security:** A rusted, mechanical combination lock on the cover to protect your secrets.
 - **Physical Controls:** Explicit gear-based interaction (Up/Down) for a realistic feel.
 - **Access Denied:** Visual feedback (shaking) when attempting to force the diary open.
-- **Privacy First:** Your 4-digit code is stored locally on your device; no cloud leaks.
+- **Privacy First:** Your 4-digit code is stored locally on your device; no cloud leaks. Damn we're close...
 
 ---
 
