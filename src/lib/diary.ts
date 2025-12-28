@@ -12,6 +12,7 @@ export type DiaryPage = {
 };
 
 const DIARY_KEY = "normal_diary_pages";
+const LOCK_KEY = "shadow_diary_lock";
 
 /**
  * Get all diary pages from localStorage
@@ -169,4 +170,25 @@ export const initializeDiary = (): void => {
             title: "My First Page",
         });
     }
+};
+
+/**
+ * Lock Management
+ */
+export const getLockCode = (): string | null => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(LOCK_KEY);
+};
+
+export const setLockCode = (code: string | null): void => {
+    if (typeof window === "undefined") return;
+    if (code === null) {
+        localStorage.removeItem(LOCK_KEY);
+    } else {
+        localStorage.setItem(LOCK_KEY, code);
+    }
+};
+
+export const isLockEnabled = (): boolean => {
+    return getLockCode() !== null;
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { TwoPageBook } from "./TwoPageBook";
 import { DiaryPage } from "./DiaryPage";
 import { BookControls } from "./BookControls";
@@ -13,8 +14,12 @@ import {
     initializeDiary,
     type DiaryPage as DiaryPageType,
     getAllPages,
+    getLockCode,
+    isLockEnabled,
+    setLockCode,
 } from "@/lib/diary";
 import { TableOfContents } from "./TableOfContents";
+import { CombinationLock } from "./CombinationLock";
 import { generateShadowResponse } from "@/ai/flows/generate-shadow-response";
 import { generateShadowAnalysis } from "@/ai/flows/generate-shadow-analysis";
 
@@ -86,11 +91,21 @@ export function DiaryBook() {
     // Audio State
     const [isMuted, setIsMuted] = useState(false);
 
+    // Lock State
+    const [isLocked, setIsLocked] = useState(false);
+    const [lockCode, setLockCodeState] = useState<string | null>(null);
+    const [shakeTrigger, setShakeTrigger] = useState(0); // Trigger for lock shake animation
+
     useEffect(() => {
         initializeDiary();
         updateTotalPages();
         // Initial load of content
         loadSpread(currentLeftPageNum);
+
+        // Check Lock
+        const code = getLockCode();
+        setLockCodeState(code);
+        setIsLocked(code !== null);
     }, []);
 
     const updateTotalPages = () => {
@@ -253,6 +268,13 @@ export function DiaryBook() {
     const goToNextSpread = useCallback(() => {
         if (isAnimating) return;
 
+        // Cover Lock Check
+        if (currentLeftPageNum === 0 && isLocked) {
+            // Can't open if locked
+            setShakeTrigger(prev => prev + 1); // Trigger shake
+            return;
+        }
+
         // If 0 -> 1.
         // If 1 -> 3.
         const nextLeft = currentLeftPageNum === 0 ? 1 : currentLeftPageNum + 2;
@@ -262,7 +284,7 @@ export function DiaryBook() {
         updateTotalPages();
         setTurningDirection("next");
 
-    }, [currentLeftPageNum, isAnimating]);
+    }, [currentLeftPageNum, isAnimating, isLocked]);
 
     const goToPrevSpread = useCallback(() => {
         if (isAnimating) return;
@@ -369,6 +391,25 @@ export function DiaryBook() {
                     THE SHADOW <br /> DIARY
                 </h1>
                 <div className="w-12 h-[1px] bg-neutral-800 mt-6" />
+
+                {/* Physical Lock Dial */}
+                <div className={cn(
+                    "mt-12 transition-all duration-1000 ease-in-out z-50", // z-50 to ensure it's on top
+                    isLocked ? "opacity-100 blur-0 scale-100 pointer-events-auto" : "opacity-0 blur-sm scale-95 pointer-events-none" // Add pointer-events-auto
+                )}>
+                    {lockCode && (
+                        <CombinationLock
+                            combination={lockCode}
+                            onUnlock={() => {
+                                setIsLocked(false);
+                                // Automatically open after short delay
+                                setTimeout(goToNextSpread, 800);
+                            }}
+                            isMuted={isMuted}
+                            triggerShake={shakeTrigger}
+                        />
+                    )}
+                </div>
             </div>
 
             {/* Final grit overlay */}
@@ -456,7 +497,12 @@ export function DiaryBook() {
                     <BookControls
                         isMuted={isMuted}
                         onMuteToggle={() => setIsMuted(!isMuted)}
-                        onDataChange={() => loadSpread(currentLeftPageNum)}
+                        onDataChange={() => {
+                            loadSpread(currentLeftPageNum);
+                            const code = getLockCode();
+                            setLockCodeState(code);
+                            setIsLocked(code !== null); // Fix: Update isLocked state immediately
+                        }}
                     />
                     <Button variant="ghost" size="icon" onClick={() => { setCurrentLeftPageNum(0); loadSpread(0); setTurningDirection("prev"); }} className="h-8 w-8 ml-1" disabled={currentLeftPageNum === 0}>
                         <X className="h-4 w-4" />

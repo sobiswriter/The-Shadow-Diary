@@ -45,6 +45,12 @@
 - **Import/Export:** Full control over your data with JSON export and import functionality.
 - **Page Management:** Unlimited pages, automatically created as you write.
 
+### 🔒 **The Deadbolt**
+- **Tactile Security:** A rusted, mechanical combination lock on the cover to protect your secrets.
+- **Physical Controls:** Explicit gear-based interaction (Up/Down) for a realistic feel.
+- **Access Denied:** Visual feedback (shaking) when attempting to force the diary open.
+- **Privacy First:** Your 4-digit code is stored locally on your device; no cloud leaks.
+
 ---
 
 ## 🚧 Roadmap & AI Integration
