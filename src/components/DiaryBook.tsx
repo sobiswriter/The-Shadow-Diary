@@ -328,8 +328,58 @@ export function DiaryBook() {
     // Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore if user is typing in an input or textarea
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+            // Check if focus is in an input or contentEditable
+            const isEditing =
+                e.target instanceof HTMLInputElement ||
+                e.target instanceof HTMLTextAreaElement ||
+                (e.target instanceof HTMLElement && e.target.isContentEditable);
+
+            // Explicit overrides (shortcuts)
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === "ArrowRight") {
+                    e.preventDefault();
+                    goToNextSpread();
+                } else if (e.key === "ArrowLeft") {
+                    if (currentLeftPageNum > 0) {
+                        e.preventDefault();
+                        goToPrevSpread();
+                    }
+                }
+                return;
+            }
+
+            if (isEditing) {
+                // Innovative "Boundary Push" navigation
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+
+                    // Only trigger if focus is inside a contentEditable (HauntedEditor)
+                    const target = e.target as HTMLElement;
+                    if (target.isContentEditable) {
+                        if (e.key === "ArrowRight") {
+                            // Check if cursor is at the very end
+                            const contentLen = target.textContent?.length || 0;
+                            // Check if selection is at the end of the container
+                            if (range.endOffset === contentLen && range.collapsed) {
+                                // If on right page (odd pageNumber), turn next
+                                // wait, currentLeftPageNum is virtual. 
+                                // Left page is currentLeftPageNum, Right page is currentLeftPageNum + 1.
+                                // But HauntedEditor doesn't know its page # easily here.
+                                // Actually, if we are in an editor, we just allow the "push" if at boundary.
+                                // To make it perfect, we'd check if we are on the Right Page of the spread for ArrowRight.
+                                goToNextSpread();
+                            }
+                        } else if (e.key === "ArrowLeft") {
+                            // Check if cursor is at the very beginning
+                            if (range.startOffset === 0 && range.collapsed) {
+                                if (currentLeftPageNum > 0) {
+                                    goToPrevSpread();
+                                }
+                            }
+                        }
+                    }
+                }
                 return;
             }
 
