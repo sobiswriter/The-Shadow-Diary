@@ -14,6 +14,7 @@ interface HauntedEditorProps {
     disabled?: boolean;
     className?: string;
     placeholder?: string;
+    pageSide?: "left" | "right";
 }
 
 export function HauntedEditor({
@@ -27,6 +28,7 @@ export function HauntedEditor({
     disabled = false,
     className,
     placeholder,
+    pageSide,
 }: HauntedEditorProps) {
     const editorRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -144,16 +146,17 @@ export function HauntedEditor({
         <div
             ref={editorRef}
             contentEditable={!disabled}
+            data-page-side={pageSide}
+            data-placeholder={placeholder}
             onInput={handleInput}
             onKeyDown={handleKeyDown}
             onBlur={() => { isTypingRef.current = false; }}
             className={cn(
                 "w-full h-full outline-none focus:outline-none whitespace-pre-wrap",
                 "font-body text-base leading-[36px] text-foreground/90",
-                "empty:before:content-[attr(placeholder)] empty:before:text-muted-foreground/40",
+                "empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground/40",
                 className
             )}
-            placeholder={placeholder}
             spellCheck={false}
             style={{ minHeight: "100%" }}
         />
