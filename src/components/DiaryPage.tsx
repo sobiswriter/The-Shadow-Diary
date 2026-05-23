@@ -126,6 +126,7 @@ export function DiaryPage({
                             onAcceptSuggestion={onAcceptSuggestion}
                             onDiscardSuggestion={onDiscardSuggestion}
                             disabled={!isEditable}
+                            pageSide={pageNumber % 2 === 0 ? "right" : "left"}
                             className="pl-8 diary-ruled-lines min-h-full"
                             placeholder={pageNumber === 1 ? "Dear Diary..." : "Continue writing..."}
                         />
